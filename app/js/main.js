@@ -61,7 +61,7 @@ fileSelector.onchange = function (e) {
                 result.width +
                 " x " +
                 result.height
-            ); 
+            );
           };
 
           // do your magic here...

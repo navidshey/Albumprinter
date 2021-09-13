@@ -22,12 +22,34 @@ export function fitImageToCanvas(
   unit,
   unitSize
 ) {
+  let result;
+  unit = unit ? unit : "px";
+  changeSize = unitSize ? unitSize : unit == "px" ? 20 : 1;
+
+  result = fitImage(img.width, img.height, boxWidth, boxHeight);
+
+  //Save image data
+  imageData.width = img.naturalWidth;
+  imageData.height = img.naturalHeight;
+  imageData.photo = {
+    id: img.id,
+    src: img.src,
+    width: result.width + unit,
+    height: result.height + unit,
+    unit: unit,
+    x: 0,
+    y: 0,
+  };
+
+  applyChanges(result.width + unit);
+  createControllBar(parentElement);
+
+  return imageData;
+}
+
+export function fitImage(imgWidth, imgHeight, boxWidth, boxHeight) {
   var result;
-  unit = unit ?? "px";
-  changeSize = unitSize ?? unit == "px" ? 20 : 1;
-  const imgWidth = img.width;
-  const imgHeight = img.height;
-  const isHorizontal = img.width > img.height;
+  const isHorizontal = imgWidth > imgHeight;
 
   //Fit image to canvas size
   if (isHorizontal) {
@@ -42,33 +64,17 @@ export function fitImageToCanvas(
     }
   }
 
-  //Save image data
-  imageData.width = img.naturalWidth;
-  imageData.height = img.naturalHeight;
-  imageData.photo = {
-    id: img.id,
-    src: img.src,
-    width: result.width + unit,
-    height: result.height + unit,
-    unit: unit ?? unit,
-    x: 0,
-    y: 0,
-  };
-
-  applyChanges(result.width + unit);
-  createControllBar(parentElement);
-
-  return imageData;
+  return result;
 }
 
-function fitVertical(imgWidth, imgHeight, boxHeight) {
+export function fitVertical(imgWidth, imgHeight, boxHeight) {
   let ratio = boxHeight / imgHeight;
-  return { width: imgWidth * ratio, height: boxHeight };
+  return { width: Math.floor(imgWidth * ratio), height: boxHeight };
 }
 
-function fitHorizontal(imgWidth, imgHeight, boxWidth) {
+export function fitHorizontal(imgWidth, imgHeight, boxWidth) {
   let ratio = boxWidth / imgWidth;
-  return { width: boxWidth, height: imgHeight * ratio };
+  return { width: boxWidth, height: Math.floor(imgHeight * ratio) };
 }
 
 function moveHorizontal(size, element) {
@@ -90,25 +96,23 @@ function moveVertical(size, element) {
 }
 
 function extendWidth(size, element) {
+  let unit = imageData.photo.unit ? imageData.photo.unit : "px";
   element = element || document.getElementById(imageData.photo.id);
   if (!validateElement(element)) {
     return;
   }
   element.style.width = calulateNewValue(
-    element.style.width.length > 0
-      ? element.style.width
-      : element.width + imageData.photo.unit,
+    element.style.width.length > 0 ? element.style.width : element.width + unit,
     size
   );
   element.style.height = "auto";
   saveImageData(null, null, element.style.width);
 }
 
-function calulateNewValue(value, newNumber) {
-  if (!value || value == "") return newNumber + imageData.photo.unit;
-  return (
-    +value.split(imageData.photo.unit)[0] + newNumber + imageData.photo.unit
-  );
+export function calulateNewValue(value, newNumber) {
+  let unit = imageData.photo.unit ? imageData.photo.unit : "px";
+  if (!value || value == "") return newNumber + unit;
+  return +value.split(unit)[0] + newNumber + unit;
 }
 
 function saveImageData(left, top, width, height) {
@@ -147,22 +151,44 @@ function createControllBar(parentElement) {
   controllBar.id = "controllBar";
 
   controllBar.appendChild(
-    generateButton(`${changeSize} ${imageData.photo.unit} Left`, "moveLeft", () => moveHorizontal(-changeSize))
+    generateButton(
+      `${changeSize} ${imageData.photo.unit} Left`,
+      "moveLeft",
+      () => moveHorizontal(-changeSize)
+    )
   );
   controllBar.appendChild(
-    generateButton(`${changeSize} ${imageData.photo.unit} Right`, "moveRight", () => moveHorizontal(changeSize))
+    generateButton(
+      `${changeSize} ${imageData.photo.unit} Right`,
+      "moveRight",
+      () => moveHorizontal(changeSize)
+    )
   );
   controllBar.appendChild(
-    generateButton(`${changeSize} ${imageData.photo.unit} Up`, "moveUp", () => moveVertical(-changeSize))
+    generateButton(`${changeSize} ${imageData.photo.unit} Up`, "moveUp", () =>
+      moveVertical(-changeSize)
+    )
   );
   controllBar.appendChild(
-    generateButton(`${changeSize} ${imageData.photo.unit} Down`, "moveDown", () => moveVertical(changeSize))
+    generateButton(
+      `${changeSize} ${imageData.photo.unit} Down`,
+      "moveDown",
+      () => moveVertical(changeSize)
+    )
   );
   controllBar.appendChild(
-    generateButton(`${changeSize} ${imageData.photo.unit} Larger`, "larger", () => extendWidth(changeSize))
+    generateButton(
+      `${changeSize} ${imageData.photo.unit} Larger`,
+      "larger",
+      () => extendWidth(changeSize)
+    )
   );
   controllBar.appendChild(
-    generateButton(`${changeSize} ${imageData.photo.unit} Smaller`, "smaller", () => extendWidth(-changeSize))
+    generateButton(
+      `${changeSize} ${imageData.photo.unit} Smaller`,
+      "smaller",
+      () => extendWidth(-changeSize)
+    )
   );
   parrentNode.appendChild(controllBar);
 

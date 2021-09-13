@@ -6,7 +6,7 @@ The changed Image can Generate in another box with new style.
 
 
 
-## System requirements
+## Run The Application
 
 In order to build the project you will need [Node.js](https://nodejs.org/en/).
 
@@ -21,6 +21,10 @@ the command line using:
 You can now start developing the application using Webpack. by typing:
 
     npm start
+
+You can tes Application using:
+
+    npm run test
     
 You can Beautify your code by typing:
 
