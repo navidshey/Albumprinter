@@ -6,13 +6,18 @@ body {
 
 #imageContainer,
 #debugContainer {
-  padding: 1em;
+  display: block;
+  margin: 40px auto;
+  overflow: hidden;
+  border: 1px solid #cccccc;
   box-sizing: border-box;
+  position: relative;
+  cursor: move;
 }
 
 .column {
-  width: 48%;
-  margin: .5%;
+  width: 98%;
+  margin: 2px auto;
   border: 1px solid #000;
   vertical-align: top;
 
@@ -24,15 +29,13 @@ body {
   }
 }
 
-#imageContainer {
-  img {
-    width: 100%;
-  }
-}
-
 #debugContainer {
   p {
     margin: 0;
     padding: 0;
   }
+}
+
+#controllBar {
+  text-align: center;
 }
